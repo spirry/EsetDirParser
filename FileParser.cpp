@@ -7,6 +7,7 @@ using namespace std;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_3 = 3;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_2 = 2;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
+const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 1024;
 //--------------------------------------------------------------------------------------------------
 #define EMPTY_STR                                  string("-")
 //--------------------------------------------------------------------------------------------------
@@ -30,14 +31,13 @@ void CFileParser::Parse(const string &word)
 
   cout << "INFO: parsing " << m_Path.filename() << endl;
 
-  streamsize chunkSize = 1024;
-  string     data;
-
-  cout << endl;
-  cout << "----------- [ RESULTS ] -------------------" << endl;
+  string data;
   while (true)
   {
-    streamsize totalRead = m_Reader.Read(m_File, data, chunkSize);
+    streamsize totalRead = m_Reader.Read(m_File, data, s_DEFAULT_CHUNK_SIZE);
+
+    cout << "INFO: Default chunk size  " << s_DEFAULT_CHUNK_SIZE << endl;
+    cout << "INFO: Total read chars " << totalRead << endl;
     
     vector< string::size_type > foundPositions;
     string::size_type           startPos   = 0;
@@ -46,6 +46,9 @@ void CFileParser::Parse(const string &word)
       foundPositions.push_back(startPos);      
       ++startPos;
     }
+
+    cout << endl;
+    cout << "----------- [ RESULTS ] -------------------" << endl;
 
     string prefix, suffix;
     for (int j = 0; j != foundPositions.size(); ++j)
@@ -78,69 +81,62 @@ void CFileParser::Parse(const string &word)
 
       if (prefix.empty())
         prefix = EMPTY_STR;
+  
+      string newSuffix;
+      ComputePrefixSuffix(newSuffix, suffix);
+      suffix = newSuffix;
 
-      //---------------------------------------------------------------------------------
-      vector< string::size_type > tabsNewLinePositions;
-      startPos = 0;
-      string::size_type startTabsSufix = 0;
-      while (string::npos != (startPos = suffix.find('\t', startTabsSufix)))
-      {
-        tabsNewLinePositions.push_back(startPos);
-        ++startTabsSufix;
-      }
-        
-      for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        suffix.replace(tabsNewLinePositions[h], 1, string("//t"));
-      //---------------------------------------------------------------------------------
-      tabsNewLinePositions.clear();
-      startPos = 0;
-      string::size_type startNewLinesSufix = 0;
-      while (string::npos != (startPos = suffix.find('\n', startNewLinesSufix)))
-      {
-        tabsNewLinePositions.push_back(startPos);
-        ++startNewLinesSufix;
-      }
-
-      for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        suffix.replace(tabsNewLinePositions[h], 1, string("n"));
-      //---------------------------------------------------------------------------------
-      tabsNewLinePositions.clear();
-      startPos = 0;
-      string::size_type startTabsPrefix = 0;
-      while (string::npos != (startPos = prefix.find('\t', startTabsPrefix)))
-      {
-        tabsNewLinePositions.push_back(startPos);
-        ++startTabsPrefix;
-      }        
-
-      for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        prefix.replace(tabsNewLinePositions[h], 2, "\t");
-      //---------------------------------------------------------------------------------
-      tabsNewLinePositions.clear();
-      startPos = 0;
-      string::size_type startNewLinesPrefix = 0;
-      while (string::npos != (startPos = prefix.find('\n', startNewLinesPrefix)))
-      {
-        tabsNewLinePositions.push_back(startPos);
-        ++startNewLinesPrefix;
-      }
-        
-      for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        prefix.replace(tabsNewLinePositions[h], 1, string("n"));
-      //---------------------------------------------------------------------------------
+      string newPrefix;
+      ComputePrefixSuffix(newPrefix, prefix);
+      prefix = newPrefix;
       
       cout << "-------------------------------------------" << endl;
       cout << "FILE: " << m_Path.filename() << "( " << foundPositions[j] << " ) : <" << prefix << ">" << word << "<" << suffix << ">" << endl;     
     }    
 
     cout << "-------------------------------------------" << endl;
-    // Finish
-    if (totalRead < chunkSize)
+    cout << "----------- [ END RESULTS ] ---------------" << endl;
+    cout << endl;
+
+    if (totalRead < s_DEFAULT_CHUNK_SIZE)
+    {
+      cout << "INFO: Finished parse function..." << endl;
       break;
+    }      
   }
 
   m_Reader.Close(m_File);
-  cout << "INFO: stop parse function..." << endl;
+  cout << "INFO: Stop parse function..." << endl;
+}
+//--------------------------------------------------------------------------------------------------
+bool CFileParser::ComputePrefixSuffix(string &output, const string &input)
+{
+  output.clear();
+
+  if (input.empty())
+    return false;
+
+  const int suffixLength = input.length();
+  for (int i = 0; i < suffixLength; ++i)
+  {
+    const bool hasTabs     = (input[i] == '\t');
+    const bool hasNewLines = (input[i] == '\n');
+    if (hasTabs || hasNewLines)
+    {
+      output.push_back('\\');
+
+      if (hasTabs)
+        output.push_back('t');
+      else if (hasNewLines)
+        output.push_back('n');
+    }
+    else
+    {
+      output.push_back(input[i]);
+    }
+  }
+
+  return true;
 }
 //--------------------------------------------------------------------------------------------------
 

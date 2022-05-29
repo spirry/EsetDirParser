@@ -22,12 +22,14 @@ CMultiReader& CMultiReader::operator = (const CMultiReader &source)
 //--------------------------------------------------------------------------------------------------
 bool CMultiReader::OpenRead(ifstream &file, const filesystem::path &path)
 {
+  cout << "INFO: Open for read operation " << endl;
   file.open(path.string(), ios::in | ios::binary);
   return file.is_open();
 }
 //--------------------------------------------------------------------------------------------------
 streamsize CMultiReader::Read(ifstream &file, string &data, streamsize count)
 {
+  cout << "INFO: Read from file " << endl;
   data.resize(static_cast<const unsigned int>(count));
 
   file.read(data.data(), count);
@@ -40,6 +42,7 @@ streamsize CMultiReader::Read(ifstream &file, string &data, streamsize count)
 //--------------------------------------------------------------------------------------------------
 void CMultiReader::Close(ifstream &file)
 {
+  cout << "INFO: Close file " << endl;
   file.close();
 }
 //--------------------------------------------------------------------------------------------------

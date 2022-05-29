@@ -18,6 +18,10 @@ public:
 
 private:
 
+  bool ComputePrefixSuffix(std::string &output, const std::string &input);
+
+private:
+
   IReader&              m_Reader;
   std::filesystem::path m_Path;
   std::ifstream         m_File;
@@ -27,6 +31,7 @@ private:
   static const std::string::size_type s_DEFAULT_SEARCH_VAL_3;
   static const std::string::size_type s_DEFAULT_SEARCH_VAL_2;
   static const std::string::size_type s_DEFAULT_SEARCH_VAL_1;
+  static const std::streamsize        s_DEFAULT_CHUNK_SIZE;
 
 };
 //--------------------------------------------------------------------------------------------------
