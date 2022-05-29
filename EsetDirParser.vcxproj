@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="InputParser.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="FileParser.cpp" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="compile.h" />
+    <ClInclude Include="InputParser.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="FileParser.h" />
     <ClInclude Include="IReader_i.h" />

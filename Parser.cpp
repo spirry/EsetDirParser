@@ -14,7 +14,7 @@ namespace fs = std::filesystem;
 //--------------------------------------------------------------------------------------------------
 void CParser::WorkerFunction(unsigned id)
 {
-  cout << "INFO: Start worker function..." << endl;
+  cout << "INFO: Start worker function for thread ID = " << (id + 1) << endl;
   while (true)
   {
     shared_ptr< CFileParser > fileParser;
