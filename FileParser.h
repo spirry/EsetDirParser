@@ -32,6 +32,7 @@ private:
   static const std::string::size_type s_DEFAULT_SEARCH_VAL_2;
   static const std::string::size_type s_DEFAULT_SEARCH_VAL_1;
   static const std::streamsize        s_DEFAULT_CHUNK_SIZE;
+  static const std::string            s_EMPTY_STRING;
 
 };
 //--------------------------------------------------------------------------------------------------

@@ -8,8 +8,9 @@ const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_3 = 3;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_2 = 2;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
 const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 1024;
+const string            CFileParser::s_EMPTY_STRING         = string("-");
 //--------------------------------------------------------------------------------------------------
-#define EMPTY_STR                                  string("-")
+#define EMPTY_STR                                  
 //--------------------------------------------------------------------------------------------------
 //--------- [ CFileParser ] ------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
@@ -58,9 +59,9 @@ void CFileParser::Parse(const string &word)
 
       const string::size_type foundPosValue = foundPositions[j];
       if (foundPosValue == 0)
-        prefix = EMPTY_STR;
+        prefix = s_EMPTY_STRING;
       else if (foundPosValue == (totalRead - word.length()))
-        suffix = EMPTY_STR;       
+        suffix = s_EMPTY_STRING;       
       
       int prefixSub = (foundPosValue - s_DEFAULT_SEARCH_VAL_3);
       if (prefix.empty())
@@ -77,10 +78,10 @@ void CFileParser::Parse(const string &word)
         suffix = data.substr((foundPosValue + word.length()), s_DEFAULT_SEARCH_VAL_3);
 
       if (suffix.empty())
-        suffix = EMPTY_STR;
+        suffix = s_EMPTY_STRING;
 
       if (prefix.empty())
-        prefix = EMPTY_STR;
+        prefix = s_EMPTY_STRING;
   
       string newSuffix;
       ComputePrefixSuffix(newSuffix, suffix);
