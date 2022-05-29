@@ -14,6 +14,8 @@ const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
 //--------------------------------------------------------------------------------------------------
 void CFileParser::Parse(const string &word)
 {
+  cout << "INFO: Start parse function..." << endl;
+
   if (word.empty())
   {
     cerr << "ERROR: word to be searched is empty, exit... " << endl;
@@ -31,6 +33,8 @@ void CFileParser::Parse(const string &word)
   streamsize chunkSize = 1024;
   string     data;
 
+  cout << endl;
+  cout << "----------- [ RESULTS ] -------------------" << endl;
   while (true)
   {
     streamsize totalRead = m_Reader.Read(m_File, data, chunkSize);
@@ -86,7 +90,7 @@ void CFileParser::Parse(const string &word)
       }
         
       for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        suffix.replace(tabsNewLinePositions[h], 1, string("t"));
+        suffix.replace(tabsNewLinePositions[h], 1, string("//t"));
       //---------------------------------------------------------------------------------
       tabsNewLinePositions.clear();
       startPos = 0;
@@ -110,7 +114,7 @@ void CFileParser::Parse(const string &word)
       }        
 
       for (int h = 0; h != tabsNewLinePositions.size(); ++h)
-        prefix.replace(tabsNewLinePositions[h], 1, string("t"));
+        prefix.replace(tabsNewLinePositions[h], 2, "\t");
       //---------------------------------------------------------------------------------
       tabsNewLinePositions.clear();
       startPos = 0;
@@ -124,19 +128,19 @@ void CFileParser::Parse(const string &word)
       for (int h = 0; h != tabsNewLinePositions.size(); ++h)
         prefix.replace(tabsNewLinePositions[h], 1, string("n"));
       //---------------------------------------------------------------------------------
+      
+      cout << "-------------------------------------------" << endl;
+      cout << "FILE: " << m_Path.filename() << "( " << foundPositions[j] << " ) : <" << prefix << ">" << word << "<" << suffix << ">" << endl;     
+    }    
 
-      cout << "----------- [ Parsing ] -------------------" << endl;
-      cout << "-------------------------------------------" << endl;
-      cout << "FILE: " << m_Path.filename() << "( " << foundPositions[j] << " ) : <" << prefix << ">" << word << "<" << suffix << ">" << endl;
-      cout << "-------------------------------------------" << endl;
-    }
-    
+    cout << "-------------------------------------------" << endl;
     // Finish
     if (totalRead < chunkSize)
       break;
   }
 
   m_Reader.Close(m_File);
+  cout << "INFO: stop parse function..." << endl;
 }
 //--------------------------------------------------------------------------------------------------
 

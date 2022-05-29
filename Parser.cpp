@@ -14,19 +14,28 @@ namespace fs = std::filesystem;
 //--------------------------------------------------------------------------------------------------
 void CParser::WorkerFunction(unsigned id)
 {
+  cout << "INFO: Start worker function..." << endl;
   while (true)
   {
     shared_ptr< CFileParser > fileParser;
 
     // Mandatory scope
     {
+      cout << "INFO: Locking MUTEX..." << endl;
       unique_lock< mutex > lock(m_QueueSync);
       if (!m_Files.empty())
-      {
+      {        
+        cout << "INFO: Attach current file to be processed " << endl;
         fileParser = m_Files.front();
+        cout << "INFO: Removed current file from queue " << endl;
         m_Files.pop();
 
         cout << "INFO: Thread ID:  " << (id + 1) << endl;
+      }
+      else
+      {
+        cout << "INFO: No files to be processed, EXIT..." << endl;
+        return;
       }
     }
 
@@ -37,17 +46,22 @@ void CParser::WorkerFunction(unsigned id)
     else
     {
       // no more files
+      cout << "INFO: No more files to be processed, EXIT" << endl;
       return;
     }
   }
+
+  cout << "INFO: Stop worker function..." << endl;
 }
 //--------------------------------------------------------------------------------------------------
 void CParser::SpawnWorkers(unsigned workerCount)
 {
+  cout << "INFO: Start spawning workers..." << endl;
+
   if (workerCount > (unsigned)m_Files.size())
     workerCount = (unsigned)m_Files.size();
 
-  cout << "INFO: spawning " << workerCount << " workers, total files: " << m_Files.size() << endl;
+  cout << "INFO: spawning " << workerCount << " workers, total files count: " << m_Files.size() << endl;
 
   vector< thread > workers;
   for (unsigned i = 0; i < workerCount; i++)  
@@ -56,6 +70,8 @@ void CParser::SpawnWorkers(unsigned workerCount)
   for (unsigned i = 0; i < workerCount; i++)
     if (workers[i].joinable())
       workers[i].join();
+
+  cout << "INFO: Stop spawning workers..." << endl;
 }
 //--------------------------------------------------------------------------------------------------
 bool CParser::Parse(unsigned workerCount)
@@ -64,11 +80,12 @@ bool CParser::Parse(unsigned workerCount)
 
   if (fs::is_directory(m_Path))
   {
+    cout << "INFO: Path is directory..." << endl;
     for (const auto& dirEntry : fs::recursive_directory_iterator(m_Path))
     {
       if (fs::is_regular_file(dirEntry))
       {
-        cout << "INFO: dir entry "  << dirEntry << endl;
+        cout << "INFO: Adding file to queue"  << dirEntry << endl;
         shared_ptr< CFileParser > parser(new CFileParser(dirEntry.path(), m_Reader));
         m_Files.push(parser);
       }
@@ -76,17 +93,21 @@ bool CParser::Parse(unsigned workerCount)
   }
   else if (fs::is_regular_file(m_Path))
   {
+    cout << "INFO: Path is file..." << endl;
+    cout << "INFO: Adding file to queue"  << m_Path.filename() << endl;
     shared_ptr< CFileParser > parser(new CFileParser(m_Path, m_Reader));
     m_Files.push(parser);
   }
   else
   {
     cerr << "ERROR: invalid path: " << m_Path;
+    cout << "INFO: Stop parsing..." << endl;
     return false;
   }
 
   SpawnWorkers(workerCount);
 
+  cout << "INFO: Stop parsing..." << endl;
   return true;
 }
 //--------------------------------------------------------------------------------------------------
