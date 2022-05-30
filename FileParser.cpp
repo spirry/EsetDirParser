@@ -47,6 +47,8 @@ void CFileParser::Parse(const string &word)
   }
 
   int totalProcessedBulks = (butesTotalToRead / s_DEFAULT_CHUNK_SIZE);
+  if (totalProcessedBulks == 0)
+    totalProcessedBulks = 1;
   cout << "INFO: Total bulks to be processed = " << totalProcessedBulks << endl;
 
   string commonBufferData;
@@ -64,9 +66,9 @@ void CFileParser::Parse(const string &word)
     entities.push_back(data);
     commonBufferData += data;
 
-    cout << "INFO: Default chunk size  "   << s_DEFAULT_CHUNK_SIZE << endl;
-    cout << "INFO: Total read chars "      << currentRead          << endl;
-    cout << "INFO: Raw data to pe parsed " << data                 << endl;
+    cout << "INFO: Default chunk size    = " << s_DEFAULT_CHUNK_SIZE << endl;
+    cout << "INFO: Total read chars      = " << currentRead          << endl;
+    cout << "INFO: Raw data to pe parsed = " << data                 << endl;
     
     vector< string::size_type > foundPositions;
     string::size_type           startPos   = 0;
@@ -167,7 +169,7 @@ void CFileParser::ComputeResults(const streamsize currentRead, const string &dat
     string result;
     result.append(string("FILE: "));
     result.append(m_Path.filename().string());
-    result.append(string("( "));
+    result.append(string(" ( "));
     result.append(to_string(foundPositions[j]));
     result.append(string(" ) : <"));
     result.append(prefix);
