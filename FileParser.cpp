@@ -46,10 +46,10 @@ void CFileParser::Parse(const string &word)
     return;
   }
 
-  int totalProcessedBulks = (butesTotalToRead / s_DEFAULT_CHUNK_SIZE);
-  if (totalProcessedBulks == 0)
-    totalProcessedBulks = 1;
-  cout << "INFO: Total bulks to be processed = " << totalProcessedBulks << endl;
+  int totalBulksToProcess = (butesTotalToRead / s_DEFAULT_CHUNK_SIZE);
+  if (totalBulksToProcess == 0)
+    totalBulksToProcess = 1;
+  cout << "INFO: Total bulks to be processed = " << totalBulksToProcess << endl;
 
   string commonBufferData;
   size_t processedBulks = 0;
@@ -87,33 +87,36 @@ void CFileParser::Parse(const string &word)
     }      
   }
 
-  //there is a problem when word is split between buffers
-  cout << "INFO: Continue parsing between buffers..." << endl;
-  size_t count = 0;
-  string nameBetweenBuffers;
-  for (auto it = entities.cbegin(); it != entities.cend(); ++it)
+  if (totalBulksToProcess > 1)
   {
-    ++count;
-    const string currEntity       = *it;
-    const size_t currEntityLength = currEntity.size();
+    //there is a problem when word is split between buffers
+    cout << "INFO: Continue parsing between buffers..." << endl;
+    size_t count = 0;
+    string nameBetweenBuffers;
+    for (auto it = entities.cbegin(); it != entities.cend(); ++it)
+    {
+      ++count;
+      const string currEntity       = *it;
+      const size_t currEntityLength = currEntity.size();
 
-    if (count % 2 == 0)
-      nameBetweenBuffers += currEntity.substr((0), word.length());
-    else
-      nameBetweenBuffers += currEntity.substr((currEntityLength - word.length()), word.length());      
+      if (count % 2 == 0)
+        nameBetweenBuffers += currEntity.substr((0), word.length());
+      else
+        nameBetweenBuffers += currEntity.substr((currEntityLength - word.length()), word.length());      
+    }
+
+    cout << "INFO: Buffers concatenated = " << nameBetweenBuffers << endl;
+
+    vector< string::size_type > foundNewPositions;
+    string::size_type           startNewPos = 0;
+    while (string::npos != (startNewPos = nameBetweenBuffers.find(word, startNewPos)))
+    {
+      foundNewPositions.push_back(startNewPos);
+      ++startNewPos;
+    }
+
+    ComputeResults(0, nameBetweenBuffers, foundNewPositions, word);
   }
-
-  cout << "INFO: Buffers concatenated = " << nameBetweenBuffers << endl;
-
-  vector< string::size_type > foundNewPositions;
-  string::size_type           startNewPos = 0;
-  while (string::npos != (startNewPos = nameBetweenBuffers.find(word, startNewPos)))
-  {
-    foundNewPositions.push_back(startNewPos);
-    ++startNewPos;
-  }
-
-  ComputeResults(0, nameBetweenBuffers, foundNewPositions, word);
 
   PrintSolution(); 
   cout << endl;
