@@ -9,7 +9,7 @@ using std::to_string;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_3 = 3;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_2 = 2;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
-const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 10;
+const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 1024;
 const string            CFileParser::s_EMPTY_STRING         = string("-");
 //--------------------------------------------------------------------------------------------------
 #define EMPTY_STR                                  
@@ -66,7 +66,7 @@ void CFileParser::Parse(const string &word)
 
     cout << "INFO: Default chunk size  "   << s_DEFAULT_CHUNK_SIZE << endl;
     cout << "INFO: Total read chars "      << currentRead          << endl;
-    cout << "INFO: Row data to pe parsed " << data                 << endl;
+    cout << "INFO: Raw data to pe parsed " << data                 << endl;
     
     vector< string::size_type > foundPositions;
     string::size_type           startPos   = 0;
@@ -214,13 +214,9 @@ bool CFileParser::ComputePrefixSuffix(string &output, const string &input)
 void CFileParser::PrintSolution()
 {
   cout << endl;
-  cout << "----------- [ RESULTS ] -------------------" << endl;
-  cout << "-------------------------------------------" << endl;
   for (const auto& it : m_Results)
     if (!it.empty())
       cout << it << endl;
-  cout << "-------------------------------------------" << endl;
-  cout << "----------- [ END RESULTS ] ---------------" << endl;
 }
 //--------------------------------------------------------------------------------------------------
 
