@@ -23,6 +23,20 @@ bool CInputParser::CheckInput(int &argc, char **argv)
   for (int i = 0; i < argc; i++)
     cout << endl << i << "argument: " << argv[i];
 
+  cout << endl;
+  if (GetPath().empty())
+  {
+    cout << "ERROR: no path selected " << endl;
+    return false;
+  }
+
+  cout << endl;
+  if (GetWord().empty())
+  {
+    cout << "ERROR: no word selected " << endl;
+    return false;
+  }
+
   if (argc < 3)
   {
     cout << endl << "ERROR: not enough parametrs, EXIT... " << endl;

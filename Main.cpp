@@ -22,6 +22,10 @@ int main(int argc, char** argv)
 
   const std::string& path = inputParser.GetPath();
   const std::string& word = inputParser.GetWord();
+  if (path.empty() || word.empty())
+  {
+    return -1;
+  }
 
   //if (inputParser.CmdOptionExists(path) && inputParser.CmdOptionExists(word))
   {
