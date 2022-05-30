@@ -108,28 +108,9 @@ bool CInputParser::CheckOutput()
   cout << "INFO: Check Output " << endl;
   
   bool ok = (!GetPath().empty() || !GetWord().empty());
-  string outStr = C_CHOICE(ok, string("OK"), string("FAILED"));
+  const string outStr = C_CHOICE(ok, string("OK"), string("FAILED"));
   cout << "INFO: Output is " << outStr << endl;
   
   return ok;
-}
-//--------------------------------------------------------------------------------------------------
-const string& CInputParser::GetCmdOption(const std::string &option) const
-{
-  vector< string >::const_iterator itr;
-  itr = find(m_Tokens.begin(), m_Tokens.end(), option);
-  if (itr != m_Tokens.end() && ++itr != m_Tokens.end())
-    return *itr;
-
-  static const string empty_string("");
-  return empty_string;
-}
-//--------------------------------------------------------------------------------------------------
-bool CInputParser::CmdOptionExists(const string &option) const
-{
-  if (option.empty())
-    return false;
-
-  return (find(m_Tokens.begin(), m_Tokens.end(), option) != m_Tokens.end());
 }
 //--------------------------------------------------------------------------------------------------

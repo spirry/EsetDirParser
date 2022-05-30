@@ -21,9 +21,6 @@ public:
 
   const std::string& GetPath() const;
   const std::string& GetWord() const;
-
-  const std::string& GetCmdOption(const std::string& option) const;
-  bool CmdOptionExists(const std::string& option) const;
   
 private:
 
