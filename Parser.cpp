@@ -41,6 +41,7 @@ void CParser::WorkerFunction(unsigned id)
 
     if (fileParser)
     {
+      //start parse the word
       fileParser->Parse(m_Word);
     }
     else

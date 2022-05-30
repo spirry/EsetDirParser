@@ -1,71 +1,117 @@
 #include "InputParser.h"
+#include "compile.h"
 #include <string>
 //--------------------------------------------------------------------------------------------------
 using namespace std;
 //--------------------------------------------------------------------------------------------------
+const int CInputParser::s_DEFAULT_PARAM_COUNT = 3;
+//--------------------------------------------------------------------------------------------------
 //-------- [ CInputParser ] ------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-CInputParser::CInputParser(int &argc, char **argv)
+CInputParser::CInputParser()
 {
-  bool ok = CheckInput(argc, argv);
-  if (ok)
-  {
-    m_Tokens.clear();
-    for (int i = 1; i < argc; ++i)
-      m_Tokens.push_back(string(argv[i]));
-  }
+  m_Argc = -1;
+  m_Argv = NULL;
 }
 //--------------------------------------------------------------------------------------------------
-bool CInputParser::CheckInput(int &argc, char **argv)
+void CInputParser::SetArguments(int &argc, char **argv)
+{
+  m_Argc = argc;
+  m_Argv = argv;
+}
+//--------------------------------------------------------------------------------------------------
+bool CInputParser::Build()
+{
+  bool 
+
+  ok =       BuildTokens();
+  ok = ok && CheckInput();
+  ok = ok && CheckOutput();
+
+  return ok;
+}
+//--------------------------------------------------------------------------------------------------
+bool CInputParser::BuildTokens()
+{
+  m_Tokens.clear();
+  for (int i = 1; i < m_Argc; ++i)
+    m_Tokens.push_back(string(m_Argv[i]));
+
+  return true;
+}
+//--------------------------------------------------------------------------------------------------
+bool CInputParser::CheckInput()
 {
   cout << endl;
-  cout << "INFO: total number of arguments: " << argc;
-  for (int i = 0; i < argc; i++)
-    cout << endl << i << "argument: " << argv[i];
+  cout << "INFO: Check input " << endl;
+  cout << "INFO: total number of arguments: " << m_Argc;
+  for (int i = 0; i < m_Argc; i++)
+    cout << endl << "[ " << i << " ]"<< "[ argument ] : " << m_Argv[i];
 
-  cout << endl;
-  if (GetPath().empty())
+  //verify argc count
+  if (m_Argc < s_DEFAULT_PARAM_COUNT)
   {
-    cout << "ERROR: no path selected " << endl;
-    return false;
-  }
+    if (GetPath().empty())
+    {
+      cout << endl;
+      cout << "ERROR: No path selected, EXIT... " << endl;
+      return false;
+    }
 
-  cout << endl;
-  if (GetWord().empty())
-  {
-    cout << "ERROR: no word selected " << endl;
-    return false;
-  }
+    if (GetWord().empty())
+    {
+      cout << endl;
+      cout << "ERROR: No word selected, EXIT... " << endl;
+      return false;
+    }
 
-  if (argc < 3)
-  {
-    cout << endl << "ERROR: not enough parametrs, EXIT... " << endl;
     return false;
   }
 
   string testPath = "";
   string testWord = "";
-  // Retrieve the (non-option) argument:
-  if ((argc <= 1) || (argv[argc - 1] == NULL) || (argv[argc - 1][0] == '-'))
+  if ((m_Argc <= 1) || (m_Argv[m_Argc - 1] == NULL) || (m_Argv[m_Argc - 1][0] == '-') || (m_Argv[m_Argc - 1][0] == ' '))
   {
     // there is NO input...
     cout << endl;
-    cerr << "ERROR: no argument provided, EXIT..." << endl;
+    cerr << "ERROR: No argument provided, EXIT..." << endl;
     return false;
   }
   else
   {  // there is an input...
-    testPath = argv[argc - 2];
-    testWord = argv[argc - 1];
+    testPath = m_Argv[m_Argc - 2];
+    testWord = m_Argv[m_Argc - 1];
   }
 
-  // Debug:
+  //found a space in PATH
+  const size_t foundSpace = testPath.find(" ");
+  if (foundSpace != string::npos)
+  {
+    cout << endl;
+    cout << "ERROR : Found a space in location path at  " << foundSpace << " position!!" << endl;
+    cout << "INFO  : Please provide a valid path and try again " << endl;
+    return false;
+  }
+
+  // Debug
   cout << endl;
   cout << endl;
   cout << "TEST: file path = " << testPath << endl;
   cout << "TEST: word      = " << testWord << endl;
+  cout << endl;
 
   return true;
+}
+//--------------------------------------------------------------------------------------------------
+bool CInputParser::CheckOutput()
+{
+  cout << "INFO: Check Output " << endl;
+  
+  bool ok = (!GetPath().empty() || !GetWord().empty());
+  string outStr = C_CHOICE(ok, string("OK"), string("FAILED"));
+  cout << "INFO: Output is " << outStr << endl;
+  
+  return ok;
 }
 //--------------------------------------------------------------------------------------------------
 const string& CInputParser::GetCmdOption(const std::string &option) const

@@ -35,6 +35,7 @@ void CFileParser::Parse(const string &word)
   string data;
   while (true)
   {
+    //read 1024 bytes of data
     streamsize totalRead = m_Reader.Read(m_File, data, s_DEFAULT_CHUNK_SIZE);
 
     cout << "INFO: Default chunk size  " << s_DEFAULT_CHUNK_SIZE << endl;

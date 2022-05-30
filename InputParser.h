@@ -12,7 +12,10 @@ class CInputParser
 
 public:
 
-  CInputParser(int &argc, char **argv);
+  CInputParser();
+  void SetArguments(int &argc, char **argv);
+
+  bool Build();
 
 public:
 
@@ -24,17 +27,25 @@ public:
   
 private:
 
-  bool CheckInput(int &argc, char **argv);
+  bool BuildTokens();
+  bool CheckInput();
+  bool CheckOutput();
 
 private:
 
+  int                       m_Argc;
+  char**                    m_Argv;
   std::vector <std::string> m_Tokens;
+
+private:
+
+  static const int s_DEFAULT_PARAM_COUNT;
 
 };
 //--------------------------------------------------------------------------------------------------
 cpp_inline const std::string& CInputParser::GetPath() const
 {
-  if (m_Tokens.size() > 1)
+  if (m_Tokens.size() > 0)
     return m_Tokens[0];
 
   static const std::string empty_string("");
@@ -43,7 +54,7 @@ cpp_inline const std::string& CInputParser::GetPath() const
 //--------------------------------------------------------------------------------------------------
 cpp_inline const std::string& CInputParser::GetWord() const
 {
-  if (m_Tokens.size() > 2)
+  if (m_Tokens.size() > 1)
     return m_Tokens[1]; 
 
   static const std::string empty_string("");

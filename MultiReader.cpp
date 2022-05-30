@@ -29,7 +29,7 @@ bool CMultiReader::OpenRead(ifstream &file, const filesystem::path &path)
 //--------------------------------------------------------------------------------------------------
 streamsize CMultiReader::Read(ifstream &file, string &data, streamsize count)
 {
-  cout << "INFO: Read from file " << endl;
+  cout << "INFO: Read from file with buffer = " << count << endl;
   data.resize(static_cast<const unsigned int>(count));
 
   file.read(data.data(), count);
