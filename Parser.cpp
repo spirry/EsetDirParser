@@ -29,8 +29,6 @@ void CParser::WorkerFunction(unsigned id)
         fileParser = m_Files.front();
         cout << "INFO: Removed current file from queue " << endl;
         m_Files.pop();
-
-        cout << "INFO: Thread ID:  " << (id + 1) << endl;
       }
       else
       {

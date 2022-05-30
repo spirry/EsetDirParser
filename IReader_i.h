@@ -18,9 +18,9 @@ protected:
 
 public:
 
-  virtual bool OpenRead(std::ifstream &file, const std::filesystem::path &path)               = 0;
-  virtual std::streamsize Read(std::ifstream &file, std::string &data, std::streamsize count) = 0;
-  virtual void Close(std::ifstream &file)                                                     = 0;
+  virtual bool OpenRead(std::ifstream &file, const std::filesystem::path &path)                           = 0;
+  virtual const std::streamsize Read(std::ifstream &file, std::string &data, const std::streamsize count) = 0;
+  virtual void Close(std::ifstream &file)                                                                 = 0;
   virtual ~IReader();
 
 };

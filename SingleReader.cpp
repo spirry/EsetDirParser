@@ -27,7 +27,7 @@ bool CSingleReader::OpenRead(ifstream &file, const filesystem::path &path)
   return CMultiReader::OpenRead(file, path);
 }
 //--------------------------------------------------------------------------------------------------
-streamsize CSingleReader::Read(ifstream &file, string &data, streamsize count)
+const streamsize CSingleReader::Read(ifstream &file, string &data, const streamsize count)
 {
   unique_lock< mutex > sync(m_DiskSync);
   return CMultiReader::Read(file, data, count);

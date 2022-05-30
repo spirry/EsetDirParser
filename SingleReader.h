@@ -18,7 +18,7 @@ public:
 public:
 
   bool OpenRead(std::ifstream &file, const std::filesystem::path &path) override;
-  std::streamsize Read(std::ifstream &file, std::string &data, std::streamsize count) override;
+  const std::streamsize Read(std::ifstream &file, std::string &data, const std::streamsize count) override;
   void Close(std::ifstream &file) override;
 
 private:

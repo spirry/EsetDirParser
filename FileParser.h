@@ -1,6 +1,7 @@
 #ifndef FILE_PARSER_H
 #define FILE_PARSER_H
 //--------------------------------------------------------------------------------------------------
+#include <vector>
 #include "IReader_i.h"
 //--------------------------------------------------------------------------------------------------
 //--------- [ CFileParser ] ------------------------------------------------------------------------
@@ -19,12 +20,18 @@ public:
 private:
 
   bool ComputePrefixSuffix(std::string &output, const std::string &input);
+  void ComputeResults(const std::streamsize currentRead, const std::string &data, 
+                      const std::vector< std::string::size_type > &foundPositions, 
+                      const std::string &word);
+
+  void PrintSolution();
 
 private:
 
-  IReader&              m_Reader;
-  std::filesystem::path m_Path;
-  std::ifstream         m_File;
+  IReader&                  m_Reader;
+  std::filesystem::path     m_Path;
+  std::ifstream             m_File;
+  std::vector< std::string> m_Results;
 
 private:
 
