@@ -9,7 +9,7 @@ using std::to_string;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_3 = 3;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_2 = 2;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
-const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 10;
+const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 1024;
 const string            CFileParser::s_EMPTY_STRING         = string("-");
 //--------------------------------------------------------------------------------------------------
 #define EMPTY_STR                                  
@@ -88,8 +88,9 @@ void CFileParser::Parse(const string &word)
     }      
   }
 
-  //there is a problem when word is split between buffers
-  //I'm not that proud of this...
+  // there is a problem when word is split between buffers
+  // i will store n characters from end of first buffer and n charactes from the beginning of the second one
+  // I will concatenate then and seach again the pattern.
   if (totalBulksToProcess > 1)
   {    
     cout << "INFO: Continue parsing between buffers..." << endl;
