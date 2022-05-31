@@ -24,10 +24,12 @@ void CParser::WorkerFunction(const unsigned id)
       cout << "INFO: Locking MUTEX..." << endl;
       unique_lock< mutex > lock(m_QueueSync);
       if (!m_Files.empty())
-      {        
+      {  
         cout << "INFO: Attach current file to be processed " << endl;
+        //take first one
         fileParser = m_Files.front();
-        cout << "INFO: And removing current file from queue " << endl;
+        cout << "INFO: And removing current file from queue " << endl;        
+        //remove it from queue
         m_Files.pop();
       }
       else
