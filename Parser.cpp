@@ -10,9 +10,9 @@
 using namespace std;
 namespace fs = std::filesystem;
 //--------------------------------------------------------------------------------------------------
-//--------- [ CParser ] ------------------------------------------------------------------------
+//--------- [ CParser ] ----------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-void CParser::WorkerFunction(unsigned id)
+void CParser::WorkerFunction(const unsigned id)
 {
   cout << "INFO: Start worker function for thread ID = " << (id + 1) << endl;
   while (true)
@@ -27,7 +27,7 @@ void CParser::WorkerFunction(unsigned id)
       {        
         cout << "INFO: Attach current file to be processed " << endl;
         fileParser = m_Files.front();
-        cout << "INFO: Removed current file from queue " << endl;
+        cout << "INFO: And removing current file from queue " << endl;
         m_Files.pop();
       }
       else
@@ -73,7 +73,7 @@ void CParser::SpawnWorkers(unsigned workerCount)
   cout << "INFO: Stop spawning workers..." << endl;
 }
 //--------------------------------------------------------------------------------------------------
-bool CParser::Parse(unsigned workerCount)
+bool CParser::Parse(const unsigned workerCount)
 {
   cout << "INFO: Start parsing..." << endl;
 

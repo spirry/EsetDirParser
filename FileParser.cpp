@@ -9,7 +9,7 @@ using std::to_string;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_3 = 3;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_2 = 2;
 const string::size_type CFileParser::s_DEFAULT_SEARCH_VAL_1 = 1;
-const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 1024;
+const streamsize        CFileParser::s_DEFAULT_CHUNK_SIZE   = 10;
 const string            CFileParser::s_EMPTY_STRING         = string("-");
 //--------------------------------------------------------------------------------------------------
 #define EMPTY_STR                                  
@@ -36,25 +36,26 @@ void CFileParser::Parse(const string &word)
 
   //Check the file size
   m_File.seekg(0, m_File.end);
-  int butesTotalToRead = static_cast<int>(m_File.tellg());
-  int bytesLeftToRead  = butesTotalToRead;
+  int bytesTotalToRead = static_cast<int>(m_File.tellg());
+  int bytesLeftToRead  = bytesTotalToRead;
   m_File.seekg(0, m_File.beg);
 
-  if (0 == butesTotalToRead) 
+  if (0 == bytesTotalToRead) 
   {
     cout << "ERROR: Input file is empty " << endl;
     return;
   }
 
-  int totalBulksToProcess = (butesTotalToRead / s_DEFAULT_CHUNK_SIZE);
+  int totalBulksToProcess = (bytesTotalToRead / s_DEFAULT_CHUNK_SIZE);
   if (totalBulksToProcess == 0)
     totalBulksToProcess = 1;
   cout << "INFO: Total bulks to be processed = " << totalBulksToProcess << endl;
 
-  string commonBufferData;
   size_t processedBulks = 0;
+  //results
   m_Results.clear();
-  vector < string > entities;
+  //keep a vector with all buffers
+  m_Entities.clear();    
   string data;
   while (true)
   {
@@ -63,13 +64,11 @@ void CFileParser::Parse(const string &word)
     const streamsize currentRead = m_Reader.Read(m_File, data, s_DEFAULT_CHUNK_SIZE);
     bytesLeftToRead -= static_cast<int>(currentRead);
 
-    entities.push_back(data);
-    commonBufferData += data;
-
     cout << "INFO: Default chunk size    = " << s_DEFAULT_CHUNK_SIZE << endl;
     cout << "INFO: Total read chars      = " << currentRead          << endl;
     cout << "INFO: Raw data to pe parsed = " << data                 << endl;
     
+    //search for find positions of pattern
     vector< string::size_type > foundPositions;
     string::size_type           startPos   = 0;
     while (string::npos != (startPos = data.find(word, startPos)))
@@ -78,8 +77,10 @@ void CFileParser::Parse(const string &word)
       ++startPos;
     }
 
+    //add result to output vector
     ComputeResults(currentRead, data, foundPositions, word);
 
+    //check if all buffers were processed
     if (bytesLeftToRead <= 0 )
     {
       cout << "INFO: Finished parse buffers..." << endl;
@@ -87,22 +88,32 @@ void CFileParser::Parse(const string &word)
     }      
   }
 
+  //there is a problem when word is split between buffers
+  //I'm not that proud of this...
   if (totalBulksToProcess > 1)
-  {
-    //there is a problem when word is split between buffers
+  {    
     cout << "INFO: Continue parsing between buffers..." << endl;
     size_t count = 0;
     string nameBetweenBuffers;
-    for (auto it = entities.cbegin(); it != entities.cend(); ++it)
+    //iterate in all stored buffers
+    bool ok = (m_Entities.size() == m_Results.size());
+    for (auto it = m_Entities.cbegin(); ok && (it != m_Entities.cend()); ++it)
     {
       ++count;
       const string currEntity       = *it;
       const size_t currEntityLength = currEntity.size();
 
-      if (count % 2 == 0)
-        nameBetweenBuffers += currEntity.substr((0), word.length());
+      if (count == 1)
+      {
+        //add characters of first bulk of data from end
+        nameBetweenBuffers += currEntity.substr((currEntityLength - word.length()), word.length());
+      }
       else
-        nameBetweenBuffers += currEntity.substr((currEntityLength - word.length()), word.length());      
+      {
+        //add characters of bulk of data from start and end
+        nameBetweenBuffers += currEntity.substr((0), word.length());
+        nameBetweenBuffers += currEntity.substr((currEntityLength - word.length()), word.length());
+      }          
     }
 
     cout << "INFO: Buffers concatenated = " << nameBetweenBuffers << endl;
@@ -115,12 +126,15 @@ void CFileParser::Parse(const string &word)
       ++startNewPos;
     }
 
+    //add result from concatenated buffers, the position will be in this new string
     ComputeResults(0, nameBetweenBuffers, foundNewPositions, word);
   }
 
+  //print solution
   PrintSolution(); 
   cout << endl;
 
+  //close file
   m_Reader.Close(m_File);
   cout << "INFO: Stop parse function..." << endl;
 }
@@ -183,6 +197,8 @@ void CFileParser::ComputeResults(const streamsize currentRead, const string &dat
     result.append(string(">"));
 
     m_Results.push_back(result);
+    cout << "INFO: Pushing a solution... " << endl;
+    m_Entities.push_back(data);
   }
 }
 //--------------------------------------------------------------------------------------------------
@@ -219,9 +235,12 @@ bool CFileParser::ComputePrefixSuffix(string &output, const string &input)
 void CFileParser::PrintSolution()
 {
   cout << endl;
-  for (const auto& it : m_Results)
-    if (!it.empty())
-      cout << it << endl;
+  bool ok = (m_Entities.size() == m_Results.size());
+  for (unsigned i = 0; ok && (i != m_Entities.size()); ++i)
+  {
+    cout << "INFO: Result for the following buffer = " << m_Entities[i] << endl;
+    cout << m_Results[i] << endl;
+  }
 }
 //--------------------------------------------------------------------------------------------------
 

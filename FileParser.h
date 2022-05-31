@@ -32,6 +32,7 @@ private:
   std::filesystem::path     m_Path;
   std::ifstream             m_File;
   std::vector< std::string> m_Results;
+  std::vector< std::string> m_Entities;
 
 private:
 

@@ -13,13 +13,13 @@ class CParser
 
 public:
 
-  CParser(const std::string path, const std::string word, IReader &reader) : m_Path(path), m_Word(word), m_Reader(reader) {}
+  CParser(const std::string &path, const std::string &word, IReader &reader) : m_Path(path), m_Word(word), m_Reader(reader) {}
 
 public:
 
-  void WorkerFunction(unsigned id);
+  void WorkerFunction(const unsigned id);
   void SpawnWorkers(unsigned workerCount);
-  bool Parse(unsigned workerCount);
+  bool Parse(const unsigned workerCount);
 
 private:
 
