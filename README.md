@@ -14,6 +14,4 @@ must recursively traverse and process all subfolders). The application must not 
 there are not enough command line arguments you should print something sensible and exit. The same is true when the input
 path cannot be opened, etc.
   
-The solution must be multithreaded in processing the data. Please note, that single threaded solution may be faster in
-this sequential scan, especially on slow drives. Try to maximize the speed and compare the result with single threaded solution
-(at least theoretically).
+The solution must be multithreaded in processing the data.
